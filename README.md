@@ -6,6 +6,8 @@ Joanne Kim
 
 Rebecca Mahany
 
+Hannah Ahn
+
 ## Project description:
 
 We plan to analyze the content of Reddit gilded text comments to discover commonalities among gilded content. The three main factors to be analyzed are upvotes/downvotes, length, and language. (We will not be considering image-only comments, and we will not be considering posts themselves.) We plan to take this data from a publicly available compilation of all Reddit comments before July 2015.
