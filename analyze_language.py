@@ -1,9 +1,12 @@
+import sys
 import nltk.data
 import nltk.sentiment
 from nltk.sentiment import SentimentAnalyzer
 import string
+import io
 import re
 from statistics import mean
+from contextlib import redirect_stdout
 # NOTE: you may need to run nltk.download()
 
 def analyze_language(comment_body):
@@ -42,10 +45,15 @@ def analyze_language(comment_body):
 
 	grammar_info = get_grammar_info()
 
-	sentiment_info = get_sentiment_info(comment_body, sentences)
-	analysis["positive/negative"] = sentiment_info[0]
-	analysis["subjective/objective"] = sentiment_info[1]
-	analysis["sentiments"] = sentiment_info[2]
+	#sentiment_info = get_sentiment_info(comment_body, sentences)
+	#analysis["positive/negative"] = sentiment_info[0]
+	#analysis["subjective/objective"] = sentiment_info[1]
+	#analysis["sentiments"] = sentiment_info[2]
+	analysis["positive/negative"] = "positive"
+	analysis["subjective/objective"] = "subj"
+	analysis["sentiments"] = "sentimental"
+
+	# TODO: get most common words for different parts of speech
 
 	return analysis
 
@@ -58,7 +66,10 @@ def get_word_info(words):
 	for word in words:
 		sum_len_words += len(word.translate(str.maketrans({p: None for p in string.punctuation})))
 
-	avg_len_words = sum_len_words / num_words
+	if num_words == 0:
+		avg_len_words = 0
+	else:
+		avg_len_words = sum_len_words / num_words
 
 	return num_words, avg_len_words
 
@@ -71,7 +82,10 @@ def get_sentence_info(sentences):
 	for sent in sentences:
 		sum_len_sent += len(sent.split())
 
-	avg_len_sent = sum_len_sent / num_sentences
+	if num_sentences == 0:
+		avg_len_sent = 0
+	else:
+		avg_len_sent = sum_len_sent / num_sentences
 
 	return num_sentences, avg_len_sent
 
@@ -90,8 +104,12 @@ def get_paragraph_info(paragraphs):
 		for sent in sents:
 			sum_len_para_w += len(sent.split())
 
-	avg_len_para_w = sum_len_para_w / num_paragraphs
-	avg_len_para_s = sum_len_para_s / num_paragraphs
+	if num_paragraphs == 0:
+		avg_len_para_w = 0
+		avg_len_para_s = 0
+	else:
+		avg_len_para_w = sum_len_para_w / num_paragraphs
+		avg_len_para_s = sum_len_para_s / num_paragraphs
 
 	return num_paragraphs, avg_len_para_w, avg_len_para_s
 		
@@ -122,11 +140,15 @@ def get_content_info(comment):
 		iter2 = re.finditer("\*", comment)
 		italics_indices = [m.start(0) for m in iter2]
 		num_italics_phrases = len(italics_indices)/2
-		lens_i = []
-		for i in range(0, len(italics_indices)):
-			if i%2 == 1:
-				lens_i.append(italics_indices[i] - italics_indices[i-1] - 1)
-		avg_len_italics_phrase = mean(lens_i)
+		if num_italics_phrases > 0.5:
+			lens_i = []
+			for i in range(0, len(italics_indices)):
+				if i%2 == 1:
+					lens_i.append(italics_indices[i] - italics_indices[i-1] - 1)
+			avg_len_italics_phrase = mean(lens_i)
+		else:
+			num_italics_phrases = 0
+			avg_len_italics_phrase = 0
 	else:
 		num_italics_phrases = 0
 		avg_len_italics_phrase = 0
@@ -142,19 +164,35 @@ def get_grammar_info():
 	# Get info on grammatical structure of sentences
 	return True
 
+# Get information on emotions, subjectivity, and sentiments
+# Requires redirecting the stdout because all functions used print to stdout
 def get_sentiment_info(comment, sentences):
+	f = io.StringIO()
+	with redirect_stdout(f):
+		for sent in sentences:
+			nltk.sentiment.util.demo_liu_hu_lexicon(sent, plot=False)
+	
 	emotions = {"Neutral": 0, "Negative": 0, "Positive": 0}
-	for sent in sentences:
-		emotion = nltk.sentiment.util.demo_liu_hu_lexicon(sent, plot=False)
-		if emotion is "Neutral":
+	e_results = f.getvalue().splitlines()
+	for emotion in e_results:
+		if emotion == "Neutral":
 			emotions["Neutral"] += 1
-		elif emotion is "Negative":
+		elif emotion == "Negative":
 			emotions["Negative"] += 1
-		elif emotion is "Positive":
+		elif emotion == "Positive":
 			emotions["Positive"] += 1
 	
-	subj_or_obj = nltk.sentiment.util.demo_sent_subjectivity(comment)
-	sentiments = nltk.sentiment.util.demo_vader_instance(comment)
+	g = io.StringIO()
+	with redirect_stdout(g):
+		nltk.sentiment.util.demo_sent_subjectivity(comment)
+	
+	subj_or_obj = g.getvalue().rstrip()
+	
+	h = io.StringIO()
+	with redirect_stdout(h):
+		nltk.sentiment.util.demo_vader_instance(comment)
+	
+	sentiments = h.getvalue().rstrip()
 
 	return emotions, subj_or_obj, sentiments
 
