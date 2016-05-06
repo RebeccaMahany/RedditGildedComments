@@ -43,17 +43,16 @@ def analyze_language(comment_body):
 	analysis["num italics phrases"] = content_info[4]
 	analysis["avg len italics phrases"] = content_info[5]
 
-	grammar_info = get_grammar_info()
+	sentiment_info = get_sentiment_info(comment_body, sentences)
+	analysis["subjective/objective"] = sentiment_info[0]
+	analysis["sentiments"] = sentiment_info[1]
 
-	#sentiment_info = get_sentiment_info(comment_body, sentences)
-	#analysis["positive/negative"] = sentiment_info[0]
-	#analysis["subjective/objective"] = sentiment_info[1]
-	#analysis["sentiments"] = sentiment_info[2]
-	analysis["positive/negative"] = "positive"
-	analysis["subjective/objective"] = "subj"
-	analysis["sentiments"] = "sentimental"
-
-	# TODO: get most common words for different parts of speech
+	pos = get_pos(comment_body)
+	analysis["nouns"] = pos[0]
+	analysis["pronouns"] = pos[1]
+	analysis["adverbs"] = pos[2]
+	analysis["adjectives"] = pos[3]
+	analysis["verbs"] = pos[4]
 
 	return analysis
 
@@ -154,45 +153,51 @@ def get_content_info(comment):
 		avg_len_italics_phrase = 0
 	return contains_link, num_caps_words, num_bold_phrases, avg_len_bold_phrase,\
 		 num_italics_phrases, avg_len_italics_phrase 
-	
-def get_grammar_info():
-	# TODO: Apparently this is still an area of active research, so I need to 
-	# do more reading to see whether this is feasible
 
-	# Get info on grammatical correctness
-
-	# Get info on grammatical structure of sentences
-	return True
 
 # Get information on emotions, subjectivity, and sentiments
 # Requires redirecting the stdout because all functions used print to stdout
-def get_sentiment_info(comment, sentences):
-	f = io.StringIO()
-	with redirect_stdout(f):
-		for sent in sentences:
-			nltk.sentiment.util.demo_liu_hu_lexicon(sent, plot=False)
-	
-	emotions = {"Neutral": 0, "Negative": 0, "Positive": 0}
-	e_results = f.getvalue().splitlines()
-	for emotion in e_results:
-		if emotion == "Neutral":
-			emotions["Neutral"] += 1
-		elif emotion == "Negative":
-			emotions["Negative"] += 1
-		elif emotion == "Positive":
-			emotions["Positive"] += 1
-	
+def get_sentiment_info(comment, sentences):	
 	g = io.StringIO()
 	with redirect_stdout(g):
 		nltk.sentiment.util.demo_sent_subjectivity(comment)
 	
 	subj_or_obj = g.getvalue().rstrip()
 	
-	h = io.StringIO()
-	with redirect_stdout(h):
-		nltk.sentiment.util.demo_vader_instance(comment)
+	#h = io.StringIO()
+	#with redirect_stdout(h):
+	#	nltk.sentiment.util.demo_vader_instance(comment)
 	
-	sentiments = h.getvalue().rstrip()
+	#sentiments = h.getvalue().rstrip()
+	sentiments = "vader's out"
 
-	return emotions, subj_or_obj, sentiments
+	return subj_or_obj, sentiments
 
+def get_pos(comment):
+
+	# Tag words in the comment with their POS
+	text = nltk.word_tokenize(comment)
+	tagged = nltk.pos_tag(text)
+	
+	nouns = []
+	pronouns = []
+	adverbs = []
+	adjectives = []
+	verbs = []
+	
+	# Add words to their respective lists
+	# TODO: it would be smart to group words by stems (eg group "cat" w/ "cats")
+	for tag in tagged:
+		if tag[1] == "NNS" or tag[1] == "NNP" or tag[1] == "NNPS" or tag[1] == "NN":
+			nouns.append(tag[0])
+		elif tag[1] == "PRP" or tag[1] == "PRP$":
+			pronouns.append(tag[0])
+		elif tag[1] == "RBR" or tag[1] == "RBS" or tag[1] == "RB":
+			adverbs.append(tag[0])
+		elif tag[1] == "JJ" or tag[1] == "JJR" or tag[1] == "JJS":
+			adjectives.append(tag[0])
+		elif tag[1] == "VB" or tag[1] == "VBP" or tag[1] == "VBD" or \
+				tag[1] == "VBG" or tag[1] == "VBN" or tag[1] == "VBZ":
+			verbs.append(tag[0])
+
+	return nouns, pronouns, adverbs, adjectives, verbs

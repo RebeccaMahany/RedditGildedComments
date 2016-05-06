@@ -44,7 +44,6 @@ def main():
 	num_italics_phrases = []
 	avg_len_italics_phrase = []
 	# TODO grammar info
-	positive_negative = []
 	subjective_objective = []
 	sentiments = []
 	nouns = {}
@@ -73,11 +72,48 @@ def main():
 			avg_len_bold_phrase.append(analysis["avg len bold phrases"])
 			num_italics_phrases.append(analysis["num italics phrases"])
 			avg_len_italics_phrase.append(analysis["avg len italics phrases"])
-			# TODO Grammar stuff here
-			positive_negative.append(analysis["positive/negative"])
 			subjective_objective.append(analysis["subjective/objective"])
 			sentiments.append(analysis["sentiments"])
-			# TODO Get most common words		
+			for noun in analysis["nouns"]:
+				if noun not in nouns:
+					nouns[noun] = 1
+				else:
+					nouns[noun] += 1
+			for pronoun in analysis["pronouns"]:
+				if pronoun not in pronouns:
+					pronouns[pronoun] = 1
+				else:
+					pronouns[pronoun] += 1
+			for adverb in analysis["adverbs"]:
+				if adverb not in adverbs:
+					adverbs[adverb] = 1
+				else:
+					adverbs[adverb] += 1
+			for adj in analysis["adjectives"]:
+				if adj not in adjectives:
+					adjectives[adj] = 1
+				else:
+					adjectives[adj] += 1
+			for verb in analysis["verbs"]:
+				if verb not in verbs:
+					verbs[verb] = 1
+				else:
+					verbs[verb] += 1
+
+	# Get most common words for each part of speech
+	sorted_nouns = sorted(zip(nouns.values(), nouns.keys()))
+	common_nouns = sorted_nouns[-30:]
+	sorted_pronouns = sorted(zip(pronouns.values(), pronouns.keys()))
+	common_pronouns = sorted_pronouns[-5:]
+	sorted_adverbs = sorted(zip(adverbs.values(), adverbs.keys()))
+	common_adverbs = sorted_adverbs[-15:]
+	sorted_adjs = sorted(zip(adjectives.values(), adjectives.keys()))
+	common_adjectives = sorted_adjs[-20:]
+	sorted_verbs = sorted(zip(verbs.values(), verbs.keys()))
+	common_verbs = sorted_verbs[-25:]
+
+	print(common_verbs)
+
 
 	avg_upvotes = mean(upvotes)
 
