@@ -34,3 +34,10 @@ NLTK, pandas, scikit-learn, NumPy
 # Documentation
 
 TBD
+
+
+# Citations and acknowledgements 
+
+This project uses VADER sentiment analysis tools, and as such we would like to cite:
+
+Hutto, C.J. & Gilbert, E.E. (2014). VADER: A Parsimonious Rule-based Model for Sentiment Analysis of Social Media Text. Eighth International Conference on Weblogs and Social Media (ICWSM-14). Ann Arbor, MI, June 2014.
