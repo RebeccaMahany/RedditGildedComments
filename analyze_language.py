@@ -4,10 +4,32 @@ import nltk.sentiment
 from nltk.sentiment import SentimentAnalyzer
 import string
 import io
+import csv
 import re
 from statistics import mean
 from contextlib import redirect_stdout
 # NOTE: you may need to run nltk.download()
+
+def run_analysis():
+	#Arrays to store data gathered from corpus
+	upvotes = []
+	data = {"word count":[], "word length":[], "sentence count":[],\
+		"sentence length":[], "paragraph count":[], "paragraph length (words)":[],\
+		"paragraph length (sentences)":[], "contains link":[], "all caps words":[],\
+		"num bold phrases":[], "avg len bold phrase":[],\
+		"num italics phrases":[], "avg len italics phrase":[],\
+		"subjective_objective":[], "sentiments":[], "nouns":{},\
+		"verbs":{}, "adjectives":{}, "adverbs":{}, "pronouns":{} }
+
+	# Analyze corpus based on language and upvotes
+	with open("data/May2015.csv", 'r') as fp:
+		reader = csv.reader(fp)
+		for row in reader:
+			upvotes.append(int(row[2]))
+			curr_comment = row[3]
+			analysis = analyze_language(curr_comment, data)
+
+	return upvotes, data
 
 def analyze_language(comment_body, analysis):
 
