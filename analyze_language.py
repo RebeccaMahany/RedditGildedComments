@@ -9,8 +9,7 @@ from statistics import mean
 from contextlib import redirect_stdout
 # NOTE: you may need to run nltk.download()
 
-def analyze_language(comment_body):
-	analysis = {}
+def analyze_language(comment_body, analysis):
 
 	# Split into paragraphs
 	paragraphs = comment_body.split("\n\n")
@@ -23,38 +22,61 @@ def analyze_language(comment_body):
 	words = comment_body.split()
 
 	word_info = get_word_info(words)
-	analysis["word count"] = word_info[0]
-	analysis["word length"] = word_info[1]
+	analysis["word count"].append(word_info[0])
+	analysis["word length"].append(word_info[1])
 
 	sent_info = get_sentence_info(sentences)
-	analysis["sentence count"] = sent_info[0]
-	analysis["sentence length"] = sent_info[1]
+	analysis["sentence count"].append(sent_info[0])
+	analysis["sentence length"].append(sent_info[1])
 
 	para_info = get_paragraph_info(paragraphs)
-	analysis["paragraph count"] = para_info[0]
-	analysis["paragraph length (words)"] = para_info[1]
-	analysis["paragraph length (sentences)"] = para_info[2]
+	analysis["paragraph count"].append(para_info[0])
+	analysis["paragraph length (words)"].append(para_info[1])
+	analysis["paragraph length (sentences)"].append(para_info[2])
 
 	content_info = get_content_info(comment_body)
-	analysis["contains link"] = content_info[0]
-	analysis["all caps words"] = content_info[1]
-	analysis["num bold phrases"] = content_info[2]
-	analysis["avg len bold phrases"] = content_info[3]
-	analysis["num italics phrases"] = content_info[4]
-	analysis["avg len italics phrases"] = content_info[5]
+	analysis["contains link"].append(content_info[0])
+	analysis["all caps words"].append(content_info[1])
+	analysis["num bold phrases"].append(content_info[2])
+	analysis["avg len bold phrase"].append(content_info[3])
+	analysis["num italics phrases"].append(content_info[4])
+	analysis["avg len italics phrase"].append(content_info[5])
 
-	sentiment_info = get_sentiment_info(comment_body, sentences)
-	analysis["subjective/objective"] = sentiment_info[0]
-	analysis["sentiments"] = sentiment_info[1]
+	#sentiment_info = get_sentiment_info(comment_body, sentences)
+	#analysis["subjective/objective"].append(sentiment_info[0])
+	#analysis["sentiments"].append(sentiment_info[1])
 
 	pos = get_pos(comment_body)
-	analysis["nouns"] = pos[0]
-	analysis["pronouns"] = pos[1]
-	analysis["adverbs"] = pos[2]
-	analysis["adjectives"] = pos[3]
-	analysis["verbs"] = pos[4]
+	for noun in pos[0]:
+		# Having a problem with [, ], and * especially being recognized as nouns
+		if noun not in string.punctuation:
+			if noun not in analysis["nouns"]:
+				analysis["nouns"][noun] = 1
+			else:
+				analysis["nouns"][noun] += 1
+	for pronoun in pos[1]:
+		if pronoun not in analysis["pronouns"]:
+			analysis["pronouns"][pronoun] = 1
+		else:
+			analysis["pronouns"][pronoun] += 1
+	for adverb in pos[2]:
+		if adverb not in analysis["adverbs"]:
+			analysis["adverbs"][adverb] = 1
+		else:
+			analysis["adverbs"][adverb] += 1
+	for adjective in pos[3]:
+		if adjective not in analysis["adjectives"]:
+			analysis["adjectives"][adjective] = 1
+		else:
+			analysis["adjectives"][adjective] += 1
+	for verb in pos[4]:
+		if verb not in analysis["verbs"]:
+			analysis["verbs"][verb] = 1
+		else:
+			analysis["verbs"][verb] += 1
+	
+	
 
-	return analysis
 
 def get_word_info(words):
 	# Get wordcount
