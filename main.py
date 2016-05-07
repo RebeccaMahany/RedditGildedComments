@@ -41,12 +41,23 @@ def main():
 	debug = False
 	run = False
 	if len(sys.argv) == 2:
+		
 		if sys.argv[1] == "help":
 			print("To run, please enter \"python3 main.py\"! No args needed.") #TODO Please change this if we need command line args down the line!
 			print("If you're having difficulties, you may need to enter \"nltk.download()\" first.")
+		
 		if sys.argv[1] == "run_tests":
+			# Run tests for analyze_language.py (Rebecca)
 			test = t_al.AnalyzeLanguageTest()
-			print(test.OverallALTest())
+			test.ALTest()
+			test.RATest()
+			test.WordInfoTest()
+			test.SentInfoTest()
+			test.ParagInfoTest()
+			test.ContentInfoTest()
+			test.SentimentInfoTest()
+			test.POSTest()
+
 		if sys.argv[1] == "debug":
 			print("Running in debug:")
 			debug = True

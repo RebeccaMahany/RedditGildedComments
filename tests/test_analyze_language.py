@@ -1,11 +1,11 @@
 import unittest
 import analyze_language as al
+import nltk
 
 class AnalyzeLanguageTest(unittest.TestCase):
 
-	def OverallALTest(self):
-		# Source: https://www.reddit.com/r/IAmA/comments/4h9gae/iama_24_year_old_blogger_living_with_cystic/d2oiagf
-		comment_1 = "I guess hope and laughter. This actually brings out something \
+	# Source: https://www.reddit.com/r/IAmA/comments/4h9gae/iama_24_year_old_blogger_living_with_cystic/d2oiagf
+	comment_1 = "I guess hope and laughter. This actually brings out something \
 			very positive I have learned about CF. We are positive \
 			people. I'm not sure why. We were given such a cruel disease, \
 			but we make the most of it. Why let it bring you down when \
@@ -16,8 +16,8 @@ class AnalyzeLanguageTest(unittest.TestCase):
 			of the world, so I just make sure that happens. You get your \
 			priorities in order very quickly. I think we live just as \
 			fulfilling life as anyone else, just quicker."
-		# Source: https://www.reddit.com/r/AskWomen/comments/4h902u/ladies_who_realized_that_some_of_their_deepest/d2ok7j9
-		comment_2 = "A lot of people have dreams of being a writer rather than dreams \
+	# Source: https://www.reddit.com/r/AskWomen/comments/4h902u/ladies_who_realized_that_some_of_their_deepest/d2ok7j9
+	comment_2 = "A lot of people have dreams of being a writer rather than dreams \
 			of writing. These are two very different dreams. One is \
 			achievable and will make you happy, the other one is not. \
 			Figure out what makes you happy WHEN you are putting the time \
@@ -32,8 +32,8 @@ class AnalyzeLanguageTest(unittest.TestCase):
 			fade quickly because that's not what I love DOING.\
 			\
 			Best of luck trying to find your dream 😊"
-		# Source: https://www.reddit.com/r/books/comments/4h43vd/what_books_do_you_reckon_are_unfilmable/d2nbz13
-		comment_3 = "While *The C Programming Language* by Brian Kernighan and Dennis \
+	# Source: https://www.reddit.com/r/books/comments/4h43vd/what_books_do_you_reckon_are_unfilmable/d2nbz13
+	comment_3 = "While *The C Programming Language* by Brian Kernighan and Dennis \
 			Ritchie is a time-tested classic in its genre, I think the story \
 			it tells could never be adequately captured on screen. What actor \
 			today could do justice to the Void Pointer, or deliver the nuance \
@@ -43,60 +43,76 @@ class AnalyzeLanguageTest(unittest.TestCase):
 			\
 			    sprintf(newcomment, \"%s\n\nEDIT -- Thanks %u the gold, %s!!\\n\", \
 			oldcomment, 4, \"kind stranger\");"
-		# Source: https://www.reddit.com/r/interestingasfuck/comments/4hbqmr/haycurling_machine/d2p3n3i
-		comment_4 = "Wet wrapping is a process in which hay is cut and wrapped shortly \
+	# Source: https://www.reddit.com/r/interestingasfuck/comments/4hbqmr/haycurling_machine/d2p3n3i
+	comment_4 = "Wet wrapping is a process in which hay is cut and wrapped shortly \
 			after cutting, usually within 24 hours. This hay ferments and is \
 			referred to as baleage. Typically this works better than traditional \
 			baling methods in wetter environments where leaving hay to dry for \
 			several days is not possible. It can also be used to get an extra \
 			cutting earlier. The fast wrapping after cutting, along with controls \
 			for temperature and moisture content prevent mold."
-	
-		result_1 = al.analyze_language(comment_1)
-		result_2 = al.analyze_language(comment_2)
-		result_3 = al.analyze_language(comment_3)
-		result_4 = al.analyze_language(comment_4)
 
-		# Testing word length
-		self.assertEqual(result_1["word count"], 138)
-		self.assertEqual(result_2["word count"], 144)
-		self.assertEqual(result_3["word count"], 72)
-		self.assertEqual(result_4["word count"], 76) 
 
-		# Testing average word length TODO obviously not correct
-		self.assertEqual(result_1["word length"], 1) 
-		self.assertEqual(result_2["word length"], 1)
-		self.assertEqual(result_3["word length"], 1)
-		self.assertEqual(result_4["word length"], 1)
 
-		# Testing sentence count
+	def ALTest(self): # TODO complete -- MockTest candidate?
+		print("Testing the functionality of analyze_language() as a whole.")
 
-		# Testing sentence length
+	def RATest(self): # TODO complete -- MockTest candidate?
+		print("Testing functionality of run_analyze() as a whole.")
 
-		# Testing paragraph count
-
-		# Testing paragraph length (words)
+	def WordInfoTest(self):
+		print("Testing functionality of get_word_info().")
 		
-		# Testing paragraph length (sentences)
+		result_1 = al.get_word_info(self.comment_1.split())
+		result_2 = al.get_word_info(self.comment_2.split())
+		result_3 = al.get_word_info(self.comment_3.split())
+		result_4 = al.get_word_info(self.comment_4.split())
 
-		# Testing contains link
-		self.assertFalse(result_1["contains link"])
-		self.assertFalse(result_2["contains link"])
-		self.assertFalse(result_3["contains link"])
-		self.assertFalse(result_4["contains link"])
+		# Testing number of words (calculated manually)
+		self.assertEqual(result_1[0], 138)
+		self.assertEqual(result_2[0], 144)
+		self.assertEqual(result_3[0], 72)
+		self.assertEqual(result_4[0], 76)
 
-		# Testing all caps words
+		# Testing average length of words
+		self.assertAlmostEqual(result_1[1], 3.6376811594)
+		self.assertAlmostEqual(result_2[1], 4.1388888889)
+		self.assertAlmostEqual(result_3[1], 4.8472222222)
+		self.assertAlmostEqual(result_4[1], 4.8815789473)
+		
+		print("Passed all tests for get_word_info().")
 
-		# Testing num bold phrases
+	def SentInfoTest(self):
+		print("Testing functionality of get_sentence_info().")
+		
+		tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
+		result_1 = al.get_sentence_info(tokenizer.tokenize(self.comment_1))
+		result_2 = al.get_sentence_info(tokenizer.tokenize(self.comment_2))
+		result_3 = al.get_sentence_info(tokenizer.tokenize(self.comment_3))
+		result_4 = al.get_sentence_info(tokenizer.tokenize(self.comment_4))
 
-		# Testing avg len bold phrases
+		# Testing number of sentences (calculated manually)
+		self.assertEqual(result_1[0], 12)
+		self.assertEqual(result_2[0], 8)
+		self.assertEqual(result_3[0], 5)
+		self.assertEqual(result_4[0], 5)
 
-		# Testing num italics phrases
+		# Testing average length of sentence (calculated manually)
+		self.assertAlmostEqual(result_1[1], 11.5)
+		self.assertAlmostEqual(result_2[1], 18)
+		self.assertAlmostEqual(result_3[1], 14.6)
+		self.assertAlmostEqual(result_4[1], 15.2)
 
-		# Testing avg len italics phrases
+		print("Passed all tests for get_sentence_info().")
 
-		# Testing positive/negative
+	def ParagInfoTest(self):
+		print("Testing functionality of get_paragraph_info().")
 
-		# Testing subjective/objective
+	def ContentInfoTest(self):
+		print("Testing functionality of get_content_info().")
 
-		# Testing sentiments
+	def SentimentInfoTest(self):
+		print("Testing functionality of get_sentiment_info().")
+
+	def POSTest(self):
+		print("Testing functionality of get_pos().")
