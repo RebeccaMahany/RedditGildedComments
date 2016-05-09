@@ -1,0 +1,84 @@
+import praw
+from flask import Flask, request, render_template
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+import matplotlib.pyplot as plt
+
+"""app = Flask(__name__)
+
+@app.route('/')
+def my_request_form():
+    return render_template("request.html")
+
+@app.route('/', methods=['POST'])
+def inputter():
+    return request.form['subreddit1'],request.form['subreddit2']
+
+def result_form():
+    return render_template("result.html")
+
+@app.route('/')"""
+
+def main():
+    reddit1 = input("red1")
+    reddit2 = input('red2"')
+    print ("past the post")
+
+    r = praw.Reddit('Comment parser example by u/_Daimon_')
+    subreddit1 = r.get_subreddit(reddit1)
+    subreddit2 = r.get_subreddit(reddit2)
+
+    comments1 = subreddit1.get_comments(limit = None)
+
+    comments2 = subreddit2.get_comments(limit = None)
+
+    flat1 = praw.helpers.flatten_tree(comments1)
+    flat2 = praw.helpers.flatten_tree(comments2)
+
+    already_done = set()
+
+    c1 = []
+    c2 = []
+
+    for comment in flat1:
+        if comment.id not in already_done:
+            c1.append(comment.body)
+            already_done.add(comment.id)
+
+    for comment in flat2:
+        if comment.id not in already_done:
+            c2.append(comment.body)
+            already_done.add(comment.id)
+
+    sid = SentimentIntensityAnalyzer()
+    dictionary1 = {}
+    dictionary2 = {}
+    for c in c1:
+        ss = sid.polarity_scores(c)
+        slist = []
+        for entry in ss:
+            slist.append(ss.get(entry))
+        dictionary1[c] = slist
+    for c in c2:
+        ss = sid.polarity_scores(c)
+        slist = []
+        for entry in ss:
+            slist.append(ss.get(entry))
+        dictionary2[c] = slist
+
+# 0 = compound; 1 = pos; 2 = neu; 3= neg
+    #use c1 for comments
+    #use listy for values
+    barplot = []
+    for entry in dictionary1:
+        thing = dictionary1.get(entry)
+        barplot.append(thing[1:4])
+        print (thing[1:4])
+
+    fig = plt.figure()
+    ax = plt.subplot(111)
+    ax.bar(c1, barplot, width=1)
+    print (ax)
+
+
+if __name__ == "__main__":
+    main()
