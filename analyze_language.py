@@ -116,6 +116,7 @@ def get_word_info(words):
 
 	return num_words, avg_len_words
 
+
 def get_sentence_info(sentences):
 	# Get number of sentences
 	num_sentences = len(sentences)
@@ -131,6 +132,7 @@ def get_sentence_info(sentences):
 		avg_len_sent = sum_len_sent / num_sentences
 
 	return num_sentences, avg_len_sent
+
 
 def get_paragraph_info(paragraphs):
 	# Get number of paragraphs
@@ -196,16 +198,16 @@ def get_content_info(comment):
 	else:
 		num_italics_phrases = 0
 		avg_len_italics_phrase = 0
+
 	return contains_link, num_bold_phrases, avg_len_bold_phrase,\
 		 num_italics_phrases, avg_len_italics_phrase 
 
 
-# Get information on emotions, subjectivity, and sentiments
-# Requires redirecting the stdout because all functions used print to stdout
+# Get information on sentiments
 def get_sentiment_info(comment):	
 
 	blob = TextBlob(comment)
-	subj_or_obj = blob.sentiment.subjectivity
+	subj_or_obj = blob.subjectivity
 
 	#g = io.StringIO()
 	#with redirect_stdout(g):

@@ -1,6 +1,7 @@
 import unittest
 import analyze_language as al
 import nltk
+import csv
 
 class AnalyzeLanguageTest(unittest.TestCase):
 
@@ -48,13 +49,47 @@ class AnalyzeLanguageTest(unittest.TestCase):
 			cutting earlier. The fast wrapping after cutting, along with controls \
 			for temperature and moisture content prevent mold."
 
+	data = {"word count":[], "word length":[], "sentence count":[],\
+		"sentence length":[], "paragraph count":[], "paragraph length (words)":[],\
+		"paragraph length (sentences)":[], "contains link":[],\
+		"num bold phrases":[], "avg len bold phrase":[],\
+		"num italics phrases":[], "avg len italics phrase":[],\
+		"subjective/objective":[], "nouns":{},\
+		"verbs":{}, "adjectives":{}, "adverbs":{}, "pronouns":{} }
 
 
-	def ALTest(self): # TODO complete -- MockTest candidate?
+
+
+	def ALTest(self):
 		print("Testing the functionality of analyze_language() as a whole.")
 
-	def RATest(self): # TODO complete -- MockTest candidate?
+		result = al.analyze_language(self.comment_1, self.data)
+
+		# Test that the method returns data in second arg--correctness of data checked below
+		self.assertEqual(len(self.data["word count"]), 1)
+		self.assertEqual(len(self.data["sentence count"]), 1)
+		self.assertEqual(len(self.data["paragraph count"]), 1)
+		self.assertEqual(len(self.data["contains link"]), 1)
+		self.assertEqual(len(self.data["subjective/objective"]), 1)
+		self.assertNotEqual(len(self.data["nouns"]), 1)
+
+		print("Passed all tests for analyze_language().")
+
+	# Test without actually reading through the entire csv file
+	def RATest(self):
 		print("Testing functionality of run_analyze() as a whole.")
+
+		with open("data/May2015.csv", 'r') as fp:
+			reader = csv.reader(fp)
+			row = next(reader)
+			
+			# Check that upvotes were properly read
+			self.assertEqual(int(row[2]), 5506)
+			
+			# Check that comment was properly read
+			self.assertEqual(row[3].split()[0], "When")
+
+		print("Passed all tests for run_analyze().")
 
 	def WordInfoTest(self):
 		print("Testing functionality of get_word_info().")
