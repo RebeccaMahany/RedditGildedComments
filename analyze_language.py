@@ -10,7 +10,7 @@ import csv
 import re
 from statistics import mean
 from contextlib import redirect_stdout
-# NOTE: you may need to run nltk.download()
+
 
 def run_analysis():
 	#Arrays to store data gathered from corpus
@@ -95,9 +95,7 @@ def analyze_language(comment_body, analysis):
 		if verb not in analysis["verbs"]:
 			analysis["verbs"][verb] = 1
 		else:
-			analysis["verbs"][verb] += 1
-	
-	
+			analysis["verbs"][verb] += 1	
 
 
 def get_word_info(words):
@@ -160,8 +158,18 @@ def get_paragraph_info(paragraphs):
 		
 
 def get_content_info(comment):
+	# List of domain names as regexes. Domains taken from https://en.wikipedia.org/wiki/List_of_Internet_top-level_domains
+	domains = ["\.com", "\.org", "\.net", "\.int", "\.edu", "\.gov", "\.mil", "\.ca", "\.uk"]
+
 	# Get whether comment contains a link
-	contains_link = False # TODO
+	contains_link = False
+	if re.search("http", comment) is not None:
+		contains_link = True
+	else:
+		for domain_name in domains:
+			if re.search(domain_name, comment) is not None:
+				contains_link = True
+				break
 
 	# Get info on amount of comment in bold (in chars)
 	if re.search("\*\*", comment) is not None:
