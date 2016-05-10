@@ -3,8 +3,11 @@ import analyze_language as al
 import nltk
 import csv
 
+
+# Unittest class to test analyze_language.py()
 class AnalyzeLanguageTest(unittest.TestCase):
 
+	# Sample gilded comments
 	# Source: https://www.reddit.com/r/IAmA/comments/4h9gae/iama_24_year_old_blogger_living_with_cystic/d2oiagf
 	comment_1 = "I guess hope and laughter. This actually brings out something \
 			very positive I have learned about CF. We are positive \
@@ -49,6 +52,7 @@ class AnalyzeLanguageTest(unittest.TestCase):
 			cutting earlier. The fast wrapping after cutting, along with controls \
 			for temperature and moisture content prevent mold."
 
+	# Empty data dictionary for use in ALTest()
 	data = {"word count":[], "word length":[], "sentence count":[],\
 		"sentence length":[], "paragraph count":[], "paragraph length (words)":[],\
 		"paragraph length (sentences)":[], "contains link":[],\
@@ -58,8 +62,7 @@ class AnalyzeLanguageTest(unittest.TestCase):
 		"verbs":{}, "adjectives":{}, "adverbs":{}, "pronouns":{} }
 
 
-
-
+	# analyze_language()
 	def ALTest(self):
 		print("Testing the functionality of analyze_language() as a whole.")
 
@@ -75,7 +78,7 @@ class AnalyzeLanguageTest(unittest.TestCase):
 
 		print("Passed all tests for analyze_language().")
 
-	# Test without actually reading through the entire csv file
+	# Test run_analyze() without actually reading through the entire csv file
 	def RATest(self):
 		print("Testing functionality of run_analyze() as a whole.")
 
@@ -91,6 +94,7 @@ class AnalyzeLanguageTest(unittest.TestCase):
 
 		print("Passed all tests for run_analyze().")
 
+	# get_word_info()
 	def WordInfoTest(self):
 		print("Testing functionality of get_word_info().")
 		
@@ -113,6 +117,7 @@ class AnalyzeLanguageTest(unittest.TestCase):
 		
 		print("Passed all tests for get_word_info().")
 
+	# get_sentence_info()
 	def SentInfoTest(self):
 		print("Testing functionality of get_sentence_info().")
 		
@@ -136,6 +141,7 @@ class AnalyzeLanguageTest(unittest.TestCase):
 
 		print("Passed all tests for get_sentence_info().")
 
+	# get_paragraph_info()
 	def ParagInfoTest(self):
 		print("Testing functionality of get_paragraph_info().")
 
@@ -164,6 +170,7 @@ class AnalyzeLanguageTest(unittest.TestCase):
 
 		print("Passed all tests for get_paragraph_info().")
 
+	# get_content_info()
 	def ContentInfoTest(self):
 		print("Testing functionality of get_content_info().")
 		
@@ -204,6 +211,7 @@ class AnalyzeLanguageTest(unittest.TestCase):
 
 		print("Passed all tests for get_content_info().")
 
+	# get_sentiment_info()
 	def SentimentInfoTest(self):
 		print("Testing functionality of get_sentiment_info().")
 
@@ -220,6 +228,7 @@ class AnalyzeLanguageTest(unittest.TestCase):
 		
 		print("Passed all tests for get_sentiment_info().")
 
+	# get_pos()
 	def POSTest(self):
 		print("Testing functionality of get_pos().")
 		
