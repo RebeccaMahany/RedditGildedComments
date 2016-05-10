@@ -12,6 +12,7 @@ from statistics import mean
 from contextlib import redirect_stdout
 
 
+# Reads through csv file, analyzes each comment in the csv file, returns data
 def run_analysis():
 	#Arrays to store data gathered from corpus
 	upvotes = []
@@ -33,6 +34,8 @@ def run_analysis():
 
 	return upvotes, data
 
+
+# Runs analysis on each Reddit comment
 def analyze_language(comment_body, analysis):
 
 	# Split into paragraphs
@@ -98,6 +101,7 @@ def analyze_language(comment_body, analysis):
 			analysis["verbs"][verb] += 1	
 
 
+# Gets wordcount, average word length
 def get_word_info(words):
 	# Get wordcount
 	num_words = len(words)
@@ -115,6 +119,7 @@ def get_word_info(words):
 	return num_words, avg_len_words
 
 
+# Gets sentence count, average sentence length
 def get_sentence_info(sentences):
 	# Get number of sentences
 	num_sentences = len(sentences)
@@ -132,6 +137,7 @@ def get_sentence_info(sentences):
 	return num_sentences, avg_len_sent
 
 
+# Gets paragraph count, avg length of paragraphs in words and in sentences
 def get_paragraph_info(paragraphs):
 	# Get number of paragraphs
 	num_paragraphs = len(paragraphs)
@@ -139,7 +145,6 @@ def get_paragraph_info(paragraphs):
 	# Get average paragraph length in words and in sentences
 	sum_len_para_w = 0
 	sum_len_para_s = 0
-	# TODO: change so that we aren't tokenizing paragraphs here and in analyze_language()
 	tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 	for para in paragraphs:
 		sents = tokenizer.tokenize(para)
@@ -157,6 +162,7 @@ def get_paragraph_info(paragraphs):
 	return num_paragraphs, avg_len_para_w, avg_len_para_s
 		
 
+# Get whether comment contains link, has bold/italic text
 def get_content_info(comment):
 	# List of domain names as regexes. Domains taken from https://en.wikipedia.org/wiki/List_of_Internet_top-level_domains
 	domains = ["\.com", "\.org", "\.net", "\.int", "\.edu", "\.gov", "\.mil", "\.ca", "\.uk"]
@@ -217,20 +223,10 @@ def get_sentiment_info(comment):
 	blob = TextBlob(comment)
 	subj_or_obj = blob.subjectivity
 
-	#g = io.StringIO()
-	#with redirect_stdout(g):
-	#	nltk.sentiment.util.demo_sent_subjectivity(comment)
-	
-	#subj_or_obj = g.getvalue().rstrip()
-	
-	#h = io.StringIO()
-	#with redirect_stdout(h):
-	#	nltk.sentiment.util.demo_vader_instance(comment)
-	
-	#sentiments = ast.literal_eval(h.getvalue().rstrip())
-
 	return subj_or_obj
 
+
+# Tag each word with its part of speech; return words organized by POS
 def get_pos(comment):
 
 	# Tag words in the comment with their POS
