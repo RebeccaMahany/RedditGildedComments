@@ -177,18 +177,12 @@ class AnalyzeLanguageTest(unittest.TestCase):
 		result_3 = al.get_sentiment_info(self.comment_3)
 		result_4 = al.get_sentiment_info(self.comment_4)
 		
-		# Test subjective/objective (manually checked)
-		self.assertEqual(result_1[0], "subj")
-		self.assertEqual(result_2[0], "subj")
-		self.assertEqual(result_3[0], "subj")
-		self.assertEqual(result_4[0], "obj")
+		# Test subjective/objective
+		self.assertAlmostEqual(result_1, 0.56857864357)
+		self.assertAlmostEqual(result_2, 0.52137254901)
+		self.assertAlmostEqual(result_3, 0.4)
+		self.assertAlmostEqual(result_4, 0.54666666667)
 		
-		# Test pos/neg/neutral (checked via nltk)
-		self.assertEqual(result_1[1]["pos"], 0.169)
-		self.assertEqual(result_2[1]["pos"], 0.229)
-		self.assertEqual(result_3[1]["pos"], 0.168)
-		self.assertEqual(result_4[1]["pos"], 0.05)
-
 		print("Passed all tests for get_sentiment_info().")
 
 	def POSTest(self):

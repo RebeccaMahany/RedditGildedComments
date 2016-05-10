@@ -3,6 +3,7 @@ import ast
 import nltk.data
 import nltk.sentiment
 from nltk.sentiment import SentimentAnalyzer
+from textblob import TextBlob
 import string
 import io
 import csv
@@ -19,7 +20,7 @@ def run_analysis():
 		"paragraph length (sentences)":[], "contains link":[],\
 		"num bold phrases":[], "avg len bold phrase":[],\
 		"num italics phrases":[], "avg len italics phrase":[],\
-		"subjective/objective":[], "sentiments":[], "nouns":{},\
+		"subjective/objective":[], "nouns":{},\
 		"verbs":{}, "adjectives":{}, "adverbs":{}, "pronouns":{} }
 
 	# Analyze corpus based on language and upvotes
@@ -65,8 +66,7 @@ def analyze_language(comment_body, analysis):
 	analysis["avg len italics phrase"].append(content_info[4])
 
 	sentiment_info = get_sentiment_info(comment_body)
-	analysis["subjective/objective"].append(sentiment_info[0])
-	analysis["sentiments"].append(sentiment_info[1])
+	analysis["subjective/objective"].append(sentiment_info)
 
 	pos = get_pos(comment_body)
 	for noun in pos[0]:
@@ -203,19 +203,23 @@ def get_content_info(comment):
 # Get information on emotions, subjectivity, and sentiments
 # Requires redirecting the stdout because all functions used print to stdout
 def get_sentiment_info(comment):	
-	g = io.StringIO()
-	with redirect_stdout(g):
-		nltk.sentiment.util.demo_sent_subjectivity(comment)
-	
-	subj_or_obj = g.getvalue().rstrip()
-	
-	h = io.StringIO()
-	with redirect_stdout(h):
-		nltk.sentiment.util.demo_vader_instance(comment)
-	
-	sentiments = ast.literal_eval(h.getvalue().rstrip())
 
-	return subj_or_obj, sentiments
+	blob = TextBlob(comment)
+	subj_or_obj = blob.sentiment.subjectivity
+
+	#g = io.StringIO()
+	#with redirect_stdout(g):
+	#	nltk.sentiment.util.demo_sent_subjectivity(comment)
+	
+	#subj_or_obj = g.getvalue().rstrip()
+	
+	#h = io.StringIO()
+	#with redirect_stdout(h):
+	#	nltk.sentiment.util.demo_vader_instance(comment)
+	
+	#sentiments = ast.literal_eval(h.getvalue().rstrip())
+
+	return subj_or_obj
 
 def get_pos(comment):
 
