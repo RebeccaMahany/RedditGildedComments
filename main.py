@@ -11,7 +11,9 @@ from statistics import mean
 import datetime
 
 import analyze_language as al
+import scoreandlen
 from tests import test_analyze_language as t_al
+from tests import score_test as st
 
 import pdb
 
@@ -37,6 +39,11 @@ def run_program():
 	common_verbs = sorted_verbs[-25:]
 
 	# Make graphs (Joanne)
+	tup = scoreandlen.datagrab()
+	scores = tup[0]
+	subredditavg = tup[1]
+	scoreandlen.allscores(scores)
+	scoreandlen.subredditaverage(subredditavg)
 
 
 def main():
@@ -61,6 +68,9 @@ def main():
 			test.ContentInfoTest()
 			test.SentimentInfoTest()
 			test.POSTest()
+			score_test = st.AnalyzeScoreTest()
+			score_test.GeneralScoreTest()
+			score_test.SubredditScoreTest()
 
 		if sys.argv[1] == "debug":
 			print("Running in debug:")
