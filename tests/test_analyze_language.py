@@ -22,25 +22,21 @@ class AnalyzeLanguageTest(unittest.TestCase):
 			achievable and will make you happy, the other one is not. \
 			Figure out what makes you happy WHEN you are putting the time \
 			and effort to do it and realizing than the other is more of a \
-			wish rather than something you should do.\
-			\
+			wish rather than something you should do.\n\n\
 			I had aspirations way back when to be a professional athlete \
 			in my sport. Currently going to my first competition made me \
 			realized that spending 10-20 hours per week working towards that \
 			goal would NOT make me happy in the long term. Yay, it would be \
 			nice to wake up and be there but then what, the happiness would \
-			fade quickly because that's not what I love DOING.\
-			\
+			fade quickly because that's not what I love DOING.\n\n\
 			Best of luck trying to find your dream 😊"
 	# Source: https://www.reddit.com/r/books/comments/4h43vd/what_books_do_you_reckon_are_unfilmable/d2nbz13
 	comment_3 = "While *The C Programming Language* by Brian Kernighan and Dennis \
 			Ritchie is a time-tested classic in its genre, I think the story \
 			it tells could never be adequately captured on screen. What actor \
 			today could do justice to the Void Pointer, or deliver the nuance \
-			of a dereference from const?\
-			\
-			I suppose Schwarzenegger could play the Null String Terminator.\
-			\
+			of a dereference from const?\n\n\
+			I suppose Schwarzenegger could play the Null String Terminator.\n\n\
 			    sprintf(newcomment, \"%s\n\nEDIT -- Thanks %u the gold, %s!!\\n\", \
 			oldcomment, 4, \"kind stranger\");"
 	# Source: https://www.reddit.com/r/interestingasfuck/comments/4hbqmr/haycurling_machine/d2p3n3i
@@ -108,11 +104,128 @@ class AnalyzeLanguageTest(unittest.TestCase):
 	def ParagInfoTest(self):
 		print("Testing functionality of get_paragraph_info().")
 
+		result_1 = al.get_paragraph_info(self.comment_1.split("\n\n"))
+		result_2 = al.get_paragraph_info(self.comment_2.split("\n\n"))
+		result_3 = al.get_paragraph_info(self.comment_3.split("\n\n"))
+		result_4 = al.get_paragraph_info(self.comment_4.split("\n\n"))		
+
+		# Testing number of paragraphs
+		self.assertEqual(result_1[0], 1)
+		self.assertEqual(result_2[0], 3)
+		self.assertEqual(result_3[0], 4)
+		self.assertEqual(result_4[0], 1)
+
+		# Testing avg number of words per paragraph
+		self.assertEqual(result_1[1], 138)
+		self.assertAlmostEqual(result_2[1], 48)
+		self.assertAlmostEqual(result_3[1], 18.25)
+		self.assertEqual(result_4[1], 76)
+
+		# Testing avg number of sentences per paragraph
+		self.assertAlmostEqual(result_1[2], 12)
+		self.assertAlmostEqual(result_2[2], 2.6666666666667)
+		self.assertAlmostEqual(result_3[2], 1.5)
+		self.assertAlmostEqual(result_4[2], 5)
+
+		print("Passed all tests for get_paragraph_info().")
+
 	def ContentInfoTest(self):
 		print("Testing functionality of get_content_info().")
+		
+		result_1 = al.get_content_info(self.comment_1)
+		result_2 = al.get_content_info(self.comment_2)
+		result_3 = al.get_content_info(self.comment_3)
+		result_4 = al.get_content_info(self.comment_4)
+
+		# Testing contains link
+		self.assertFalse(result_1[0])
+		self.assertFalse(result_2[0])
+		self.assertFalse(result_3[0])
+		self.assertFalse(result_4[0])
+
+		# Testing number of bold phrases
+		self.assertEqual(result_1[1], 0)
+		self.assertEqual(result_2[1], 0)
+		self.assertEqual(result_3[1], 0)
+		self.assertEqual(result_4[1], 0)
+
+		# Testing avg length of bold phrases
+		self.assertEqual(result_1[2], 0)
+		self.assertEqual(result_2[2], 0)
+		self.assertEqual(result_3[2], 0)
+		self.assertEqual(result_4[2], 0)
+
+		# Testing number of italics phrases
+		self.assertEqual(result_1[3], 0)
+		self.assertEqual(result_2[3], 0)
+		self.assertEqual(result_3[3], 1)
+		self.assertEqual(result_4[3], 0)
+		
+		# Testing avg length of italics phrases
+		self.assertEqual(result_1[4], 0)
+		self.assertEqual(result_2[4], 0)
+		self.assertEqual(result_3[4], 26)
+		self.assertEqual(result_4[4], 0)
+
+		print("Passed all tests for get_content_info().")
 
 	def SentimentInfoTest(self):
 		print("Testing functionality of get_sentiment_info().")
 
+		result_1 = al.get_sentiment_info(self.comment_1)
+		result_2 = al.get_sentiment_info(self.comment_2)
+		result_3 = al.get_sentiment_info(self.comment_3)
+		result_4 = al.get_sentiment_info(self.comment_4)
+		
+		# Test subjective/objective (manually checked)
+		self.assertEqual(result_1[0], "subj")
+		self.assertEqual(result_2[0], "subj")
+		self.assertEqual(result_3[0], "subj")
+		self.assertEqual(result_4[0], "obj")
+		
+		# Test pos/neg/neutral (checked via nltk)
+		self.assertEqual(result_1[1]["pos"], 0.169)
+		self.assertEqual(result_2[1]["pos"], 0.229)
+		self.assertEqual(result_3[1]["pos"], 0.168)
+		self.assertEqual(result_4[1]["pos"], 0.05)
+
+		print("Passed all tests for get_sentiment_info().")
+
 	def POSTest(self):
 		print("Testing functionality of get_pos().")
+		
+		result_1 = al.get_pos(self.comment_1)
+		result_2 = al.get_pos(self.comment_2)
+		result_3 = al.get_pos(self.comment_3)
+		result_4 = al.get_pos(self.comment_4)
+		
+		# Test nouns
+		self.assertIn("laughter", result_1[0])
+		self.assertIn("writer", result_2[0])
+		self.assertIn("story", result_3[0])
+		self.assertIn("process", result_4[0])
+	
+		# Test pronouns
+		self.assertIn("I", result_1[1])
+		self.assertIn("I", result_2[1])
+		self.assertIn("I", result_3[1])
+		self.assertIn("It", result_4[1])
+	
+		# Test adverbs
+		self.assertIn("very", result_1[2])
+		self.assertIn("very", result_2[2])
+		self.assertIn("adequately", result_3[2])
+		self.assertIn("shortly", result_4[2])
+
+		# Test adjectives
+		self.assertIn("cruel", result_1[3])
+		self.assertIn("professional", result_2[3])
+		self.assertIn("traditional", result_4[3])
+
+		# Test verbs
+		self.assertIn("brings", result_1[4])
+		self.assertIn("going", result_2[4])
+		self.assertIn("deliver", result_3[4])
+		self.assertIn("cutting", result_4[4])
+
+		print("Passed all tests for get_pos().")

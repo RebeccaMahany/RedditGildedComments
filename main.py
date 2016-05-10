@@ -1,6 +1,5 @@
 """Main method for RedditGildedComments.
 Project by:
-Hannah Ahn
 Joanne Kim
 Rebecca Mahany
 """
@@ -9,15 +8,21 @@ import sys
 import csv
 
 from statistics import mean
+import datetime
 
 import analyze_language as al
-
 from tests import test_analyze_language as t_al
 
 import pdb
 
 def run_program():
+	current_time = datetime.datetime.now().time()
+	print(current_time.isoformat())
+
 	upvotes, data = al.run_analysis()
+	
+	new_time = datetime.datetime.now().time()
+	print(new_time.isoformat())
 
 	# Get most common words for each part of speech
 	sorted_nouns = sorted(zip(data["nouns"].values(), data["nouns"].keys()))
@@ -32,7 +37,6 @@ def run_program():
 	common_verbs = sorted_verbs[-25:]
 
 	# Make graphs (Joanne)
-	# Make predictions (Hannah)
 
 
 def main():

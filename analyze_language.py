@@ -1,4 +1,5 @@
 import sys
+import ast
 import nltk.data
 import nltk.sentiment
 from nltk.sentiment import SentimentAnalyzer
@@ -15,10 +16,10 @@ def run_analysis():
 	upvotes = []
 	data = {"word count":[], "word length":[], "sentence count":[],\
 		"sentence length":[], "paragraph count":[], "paragraph length (words)":[],\
-		"paragraph length (sentences)":[], "contains link":[], "all caps words":[],\
+		"paragraph length (sentences)":[], "contains link":[],\
 		"num bold phrases":[], "avg len bold phrase":[],\
 		"num italics phrases":[], "avg len italics phrase":[],\
-		"subjective_objective":[], "sentiments":[], "nouns":{},\
+		"subjective/objective":[], "sentiments":[], "nouns":{},\
 		"verbs":{}, "adjectives":{}, "adverbs":{}, "pronouns":{} }
 
 	# Analyze corpus based on language and upvotes
@@ -58,15 +59,14 @@ def analyze_language(comment_body, analysis):
 
 	content_info = get_content_info(comment_body)
 	analysis["contains link"].append(content_info[0])
-	analysis["all caps words"].append(content_info[1])
-	analysis["num bold phrases"].append(content_info[2])
-	analysis["avg len bold phrase"].append(content_info[3])
-	analysis["num italics phrases"].append(content_info[4])
-	analysis["avg len italics phrase"].append(content_info[5])
+	analysis["num bold phrases"].append(content_info[1])
+	analysis["avg len bold phrase"].append(content_info[2])
+	analysis["num italics phrases"].append(content_info[3])
+	analysis["avg len italics phrase"].append(content_info[4])
 
-	#sentiment_info = get_sentiment_info(comment_body, sentences)
-	#analysis["subjective/objective"].append(sentiment_info[0])
-	#analysis["sentiments"].append(sentiment_info[1])
+	sentiment_info = get_sentiment_info(comment_body)
+	analysis["subjective/objective"].append(sentiment_info[0])
+	analysis["sentiments"].append(sentiment_info[1])
 
 	pos = get_pos(comment_body)
 	for noun in pos[0]:
@@ -161,25 +161,26 @@ def get_content_info(comment):
 	# Get whether comment contains a link
 	contains_link = False # TODO
 
-	# Get info on amount of words in ALL CAPS
-	num_caps_words = 0 # TODO
-
 	# Get info on amount of comment in bold (in chars)
-	if re.match("\*\*", comment) is not None:
+	if re.search("\*\*", comment) is not None:
 		iter1 = re.finditer("\*\*", comment)
 		bold_indices = [n.start(0) for n in iter1]
 		num_bold_phrases = len(bold_indices)/2
-		lens_b = []
-		for i in range(0, len(bold_indices)):
-			if i%2 == 1:
-				lens_b.append(bold_indices[i] - bold_indices[i-1] - 2)
-		avg_len_bold_phrase = mean(lens_b)
+		if num_bold_phrases > 0.5:
+			lens_b = []
+			for i in range(0, len(bold_indices)):
+				if i%2 == 1:
+					lens_b.append(bold_indices[i] - bold_indices[i-1] - 2)
+			avg_len_bold_phrase = mean(lens_b)
+		else:
+			num_bold_phrases = 0
+			avg_len_bold_phrase = 0
 	else:
 		num_bold_phrases = 0
 		avg_len_bold_phrase = 0
 
 	# Get info on amount of comment in italics (in chars)
-	if re.match("[^*]\*[^*]", comment) is not None:
+	if re.search("[^*]\*[^*]", comment) is not None:
 		iter2 = re.finditer("\*", comment)
 		italics_indices = [m.start(0) for m in iter2]
 		num_italics_phrases = len(italics_indices)/2
@@ -195,25 +196,24 @@ def get_content_info(comment):
 	else:
 		num_italics_phrases = 0
 		avg_len_italics_phrase = 0
-	return contains_link, num_caps_words, num_bold_phrases, avg_len_bold_phrase,\
+	return contains_link, num_bold_phrases, avg_len_bold_phrase,\
 		 num_italics_phrases, avg_len_italics_phrase 
 
 
 # Get information on emotions, subjectivity, and sentiments
 # Requires redirecting the stdout because all functions used print to stdout
-def get_sentiment_info(comment, sentences):	
+def get_sentiment_info(comment):	
 	g = io.StringIO()
 	with redirect_stdout(g):
 		nltk.sentiment.util.demo_sent_subjectivity(comment)
 	
 	subj_or_obj = g.getvalue().rstrip()
 	
-	#h = io.StringIO()
-	#with redirect_stdout(h):
-	#	nltk.sentiment.util.demo_vader_instance(comment)
+	h = io.StringIO()
+	with redirect_stdout(h):
+		nltk.sentiment.util.demo_vader_instance(comment)
 	
-	#sentiments = h.getvalue().rstrip()
-	sentiments = "vader's out"
+	sentiments = ast.literal_eval(h.getvalue().rstrip())
 
 	return subj_or_obj, sentiments
 
