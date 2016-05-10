@@ -37,7 +37,7 @@ def datagrab():
     f0415.close()
     f0515.close()
 
-    return scoregroup, subredditscore, scores
+    return tuple([scoregroup, subredditscore, scores])
 
 #all scores
 def allscores(scoregroup):
