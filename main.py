@@ -1,6 +1,4 @@
 """Main method for RedditGildedComments.
-Project by:
-Joanne Kim
 Rebecca Mahany
 """
 
@@ -11,9 +9,6 @@ from statistics import mean
 
 import analyze_language as al
 from tests import test_analyze_language as t_al
-
-import scoreandlen
-from tests import score_test
 
 import pdb
 
@@ -82,13 +77,6 @@ def run_program():
 	print("Average length of italics phrase:")
 	print(mean(data["avg len italics phrase"]))
 
-	# Make graphs (Joanne)
-	tup = scoreandlen.datagrab()
-	scores = tup[0]
-	subredditavg = tup[1]
-	scoreandlen.allscores(scores)
-	scoreandlen.subredditaverage(subredditavg)
-
 
 def main():
 
@@ -112,11 +100,6 @@ def main():
 			test.ContentInfoTest()
 			test.SentimentInfoTest()
 			test.POSTest()
-			object = score_test.AnalyzeScoreTest()
-			object.GeneralScoreTest()
-			object.SubredditScoreTest()
-
-
 
 		if sys.argv[1] == "debug":
 			print("Running in debug:")
