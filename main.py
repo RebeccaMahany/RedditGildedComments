@@ -2,15 +2,14 @@
 Rebecca Mahany
 """
 
+# Imports
 import sys
 import csv
-
 from statistics import mean
-
 import analyze_language as al
 from tests import test_analyze_language as t_al
-
 import pdb
+
 
 def run_program():
 
@@ -78,6 +77,7 @@ def run_program():
 	print(mean(data["avg len italics phrase"]))
 
 
+# Main method TODO use argparse
 def main():
 
 	# Parse command line args
